@@ -2,7 +2,6 @@
   "printWidth": 140,
   "useTabs": false,
   "bracketSpacing": true,
-  "jsxBracketSameLine": true,
   "jsxSingleQuote": true,
   "arrowParens": "avoid",
   "semi": true,
