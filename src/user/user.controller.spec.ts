@@ -10,7 +10,7 @@ describe('UsersController', () => {
       imports: [PrismaModule],
       controllers: [UserController],
       providers: [UserService],
-      exports: [UserService],
+      exports: [UserService]
     }).compile();
 
     userController = module.get<UserController>(UserController);

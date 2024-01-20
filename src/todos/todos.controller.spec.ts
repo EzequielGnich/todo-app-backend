@@ -11,7 +11,7 @@ describe('UsersController', () => {
       imports: [PrismaModule, JwtModule],
       controllers: [TodosController],
       providers: [TodosService],
-      exports: [TodosService],
+      exports: [TodosService]
     }).compile();
 
     userController = module.get<TodosController>(TodosController);

@@ -18,14 +18,14 @@ export class UserService {
 
     const data: Prisma.UserCreateInput = {
       ...createUserDto,
-      password: await bcrypt.hash(createUserDto.password, 10),
+      password: await bcrypt.hash(createUserDto.password, 10)
     };
 
     const createdUser = await this.prisma.user.create({ data });
 
     return {
       ...createdUser,
-      password: undefined,
+      password: undefined
     };
   }
 

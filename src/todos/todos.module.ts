@@ -8,6 +8,6 @@ import { PrismaModule } from 'src/prisma/prisma.module';
   imports: [PrismaModule, JwtModule],
   controllers: [TodosController],
   providers: [TodosService],
-  exports: [TodosService],
+  exports: [TodosService]
 })
 export class TodosModule {}

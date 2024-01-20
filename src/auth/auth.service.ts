@@ -11,18 +11,18 @@ import { UserToken } from './models/UserToken';
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly userService: UserService,
+    private readonly userService: UserService
   ) {}
 
   async login(user: User): Promise<UserToken> {
     const payload: UserPayload = {
       sub: user.id,
       email: user.email,
-      name: user.name,
+      name: user.name
     };
 
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload)
     };
   }
 
@@ -35,13 +35,11 @@ export class AuthService {
       if (isPasswordValid) {
         return {
           ...user,
-          password: undefined,
+          password: undefined
         };
       }
     }
 
-    throw new UnauthorizedError(
-      'Email address or password provided is incorrect.',
-    );
+    throw new UnauthorizedError('Email address or password provided is incorrect.');
   }
 }
