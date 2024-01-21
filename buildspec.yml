@@ -3,7 +3,7 @@ version: 0.2
 phases:
   build:
     commands:
-      - npm ci && npm i -g prisma && prisma migrate production && npm run build # clean install (npm ci) and build (npm run build)
+      - npm ci && npm i -g prisma && prisma migrate deploy && npm run build # clean install (npm ci) and build (npm run build)
 
 artifacts:
   files:
