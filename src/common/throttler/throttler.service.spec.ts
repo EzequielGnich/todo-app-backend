@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ThrottlerService } from './throttler.service';
+import { ThrottlerConfigService } from './throttler.service';
 
-describe('ThrottlerService', () => {
-  let service: ThrottlerService;
+describe('ThrottlerConfigService', () => {
+  let service: ThrottlerConfigService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [ThrottlerService]
+      providers: [ThrottlerConfigService]
     }).compile();
 
-    service = module.get<ThrottlerService>(ThrottlerService);
+    service = module.get<ThrottlerConfigService>(ThrottlerConfigService);
   });
 
   it('should be defined', () => {
