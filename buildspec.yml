@@ -3,12 +3,7 @@ version: 0.2
 phases:
   build:
     commands:
-      - npm ci && npm run build && npm run start:prod
-
-env:
-  variables:
-    AWS_S3_BUCKET_NAME: echo $AWS_S3_BUCKET_NAME
-    API_URL: echo $API_URL
+      - npm ci && npm run build
 
 artifacts:
   files:
