@@ -1,10 +1,22 @@
 version: 0.2
 
 phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+
+  pre_build:
+    commands:
+      - npm ci
+
   build:
     commands:
-      - npm ci && npm run build
+      - npm run build
 
-artifacts:
-  files:
-    - '**/*'
+  # post_build:
+  # commands:
+  # - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+  # - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+  # - aws configure set default.region $AWS_REGION
+  # - aws elasticbeanstalk create-application-version --application-name $AWS_EB_APP_NAME --version-label $CODEBUILD_RESOLVED_SOURCE_VERSION --source-bundle S3Bucket=$AWS_S3_BUCKET,S3Key=$CODEBUILD_RESOLVED_SOURCE_VERSION.zip
+  # - aws elasticbeanstalk update-environment --environment-name $AWS_EB_ENV_NAME --version-label $CODEBUILD_RESOLVED_SOURCE_VERSION
