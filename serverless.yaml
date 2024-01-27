@@ -1,0 +1,32 @@
+service: nest-serverless-lambda
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  profile: ${opt:profile, 'default'}
+
+functions:
+  main:
+    handler: src/lambda.handler
+    events:
+      - http:
+          path: /{any+}
+          method: any
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-plugin-optimize
+  - serverless-offline
+  - serverless-dotenv-plugin
+
+package:
+  patterns:
+    - '!node_modules/.prisma/client/libquery_engine-*'
+    - 'node_modules/.prisma/client/libquery_engine-rhel-*'
+    - '!node_modules/prisma/libquery_engine-*'
+    - '!node_modules/@prisma/engines/**'
+    - 'node_modules/@prisma/client/**'
