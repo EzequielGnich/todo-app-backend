@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
+import { UserAlreadyExistsError } from './exceptions/user.already.exists';
 
 @Injectable()
 export class UserService {
@@ -13,7 +14,7 @@ export class UserService {
     const userExists = await this.findByEmail(createUserDto.email);
 
     if (userExists) {
-      throw new Error('User already exists.');
+      throw new UserAlreadyExistsError('User already exists');
     }
 
     const data: Prisma.UserCreateInput = {
