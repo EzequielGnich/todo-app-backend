@@ -5,6 +5,8 @@
 
 info_logs/
 
+.serverless/
+
 /.aws/credentials
 
 # Logs
