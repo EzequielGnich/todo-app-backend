@@ -3,6 +3,8 @@
 /node_modules
 .build/
 
+info_logs/
+
 /.aws/credentials
 
 # Logs
