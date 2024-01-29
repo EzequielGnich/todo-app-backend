@@ -12,5 +12,5 @@ export const whitelist = [
   'http://127.0.0.1:3001',
   'http://127.0.0.1:3002',
   'http://10.0.2.2:3000',
-  'http://localhost:5173/'
+  'http://localhost:5173'
 ];
