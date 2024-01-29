@@ -3,19 +3,32 @@ import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { ImATeapotException, ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
+import { whitelist } from './common/constants';
 
 async function bootstrap() {
   try {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, {
+      cors: {
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
+        origin: function (origin, callback) {
+          if (!origin) {
+            callback(null, true);
+            return;
+          }
+          if (whitelist.includes(origin) || !!origin.match(/yourdomain\.com$/)) {
+            console.log('allowed cors for:', origin);
+            callback(null, true);
+          } else {
+            console.log('blocked cors for:', origin);
+            callback(new ImATeapotException('Not allowed by CORS'), false);
+          }
+        }
+      }
+    });
 
     app.use(helmet());
-
-    app.enableCors({
-      origin: false // Specify the allowed origins.  I'm setting false to allow requests from any origin
-      // Find more configuration options here: https://github.com/expressjs/cors#configuration-options
-    });
 
     const config = new DocumentBuilder().setTitle('Todos').setDescription('The Todos API').setVersion('0.1').build();
 
