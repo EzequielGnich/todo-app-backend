@@ -6,6 +6,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ImATeapotException, ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import { whitelist } from './common/constants';
+import { logger } from './logger/winston.config';
 
 async function bootstrap() {
   try {
@@ -18,10 +19,9 @@ async function bootstrap() {
             return;
           }
           if (whitelist.includes(origin) || !!origin.match(/yourdomain\.com$/)) {
-            console.log('allowed cors for:', origin);
             callback(null, true);
           } else {
-            console.log('blocked cors for:', origin);
+            logger.error(`CORS: ${origin} not allowed`);
             callback(new ImATeapotException('Not allowed by CORS'), false);
           }
         }
