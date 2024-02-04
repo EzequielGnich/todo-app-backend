@@ -23,7 +23,7 @@ jobs:
           name: Start server
           background: true
       - run:
-          command: sleep 15 && curl -I localhost:5000
+          command: sleep 15 && curl -I localhost:3000/login
           name: Verify server is running
 
   deploy:
