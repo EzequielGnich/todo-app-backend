@@ -46,7 +46,7 @@ jobs:
     steps:
       - checkout
       - install_deps
-  run_tests:
+  tests:
     executor: node
     parallelism: 6
     steps:
@@ -64,7 +64,7 @@ jobs:
           root: workspace/coverage
           paths:
             - ./*
-  run_lint:
+  lint:
     executor: node
     steps:
       - checkout
@@ -103,7 +103,7 @@ jobs:
             --data-raw '{
               "body": "## ESLint Report\n\n'"$ERRORS_BODY"'\n'"$WARNINGS_BODY"'"
             }'
-  run_build:
+  build:
     parameters:
       namespace:
         description: Cluster namespace
@@ -158,17 +158,17 @@ workflows:
       - install_dependencies:
           context:
           <<: *pull_request_filters
-      - run_tests:
+      - tests:
           requires:
             - install_dependencies
           context:
           <<: *pull_request_filters
-      - run_lint:
+      - lint:
           requires:
             - install_dependencies
           context:
           <<: *pull_request_filters
-      - run_build:
+      - build:
           requires:
             - install_dependencies
           context:
@@ -180,12 +180,12 @@ workflows:
       - install_dependencies:
           context:
           <<: *deploy_staging_filters
-      - run_tests:
+      - tests:
           requires:
             - install_dependencies
           context:
           <<: *deploy_staging_filters
-      - run_build:
+      - build:
           requires:
             - install_dependencies
           namespace: 'staging'
