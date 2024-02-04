@@ -1,194 +1,32 @@
 version: 2.1
-
-executors:
-  node:
-    docker:
-      - image: cimg/node:20.10.0
-
-restore_cache: &restore_cache
-  restore_cache:
-    name: Restore NPM Package Cache
-    keys:
-      - npm-dependencies-{{ checksum "package-lock.json" }}
-      - npm-dependencies-
-
-install_dependencies: &install_dependencies
-  run:
-    name: Install NPM Dependencies
-    command: npm install
-
-save_cache: &save_cache
-  save_cache:
-    name: Save NPM Package Cache
-    key: npm-dependencies-{{ checksum "package-lock.json" }}
-    paths:
-      - node_modules
-
-commands:
-  install_deps:
-    steps:
-      - run:
-          name: Installing Dependencies
-          command: echo "Installing Dependencies"
-      - *restore_cache
-      - *install_dependencies
-      - *save_cache
-  create_workspace:
-    steps:
-      - run:
-          name: Create workspace
-          command: |
-            mkdir -p workspace
+orbs:
+  node: circleci/node@5.1.0
 
 jobs:
-  install_dependencies:
-    executor: node
+  build_and_test:
+    executor:
+      name: node/default
+      tag: '18.16'
     steps:
       - checkout
-      - install_deps
-  tests:
-    executor: node
-    parallelism: 6
-    steps:
-      - checkout
-      - *restore_cache
+      - run: node --version
+      - node/install-packages:
+          pkg-manager: npm
       - run:
-          name: Run Tests
-          command: |
-            mkdir -p workspace/coverage
-            npm run test:coverage -- --reporter=default --reporter=junit --outputFile='./reports/junit.xml' --shard=$(expr $CIRCLE_NODE_INDEX + 1)/$CIRCLE_NODE_TOTAL --pool=forks
-            cp coverage/lcov.info workspace/coverage/lcov_$CIRCLE_NODE_INDEX.info
-      - store_test_results:
-          path: ./reports/
-      - persist_to_workspace:
-          root: workspace/coverage
-          paths:
-            - ./*
-  lint:
-    executor: node
-    steps:
-      - checkout
-      - *restore_cache
+          command: npm run test:unit
+          name: Run unit tests
       - run:
-          name: Run Linter
-          command: |
-
-            ESLINT_RESULTS_PATH=.eslintresults
-
-            NODE_OPTIONS=--max-old-space-size=3584 npm run lint -- --format compact --output-file $ESLINT_RESULTS_PATH || true
-
-            ERRORS=$(grep -wc "Error" $ESLINT_RESULTS_PATH)
-            WARNINGS=$(grep -wc "Warning" $ESLINT_RESULTS_PATH)
-
-            if [ $ERRORS -gt 0 ]; then
-              ERRORS_BODY="❌  **$ERRORS** Errors. Please help us to keep the code clean 😉"
-            fi
-
-            if [ $WARNINGS -gt 0 ]; then
-              WARNINGS_BODY="⚠️  **$WARNINGS** Warnings"
-            fi
-
-            PR_RESPONSE=$(curl --location --request GET "https://api.github.com/repos/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/pulls?head=$CIRCLE_PROJECT_USERNAME:$CIRCLE_BRANCH&state=open" \
-              -u CircleCI:$GITHUB_TOKEN)
-
-            if [ $(echo $PR_RESPONSE | jq length) -eq 0 ]; then
-              echo "No PR found to update"
-            else
-              PR_COMMENT_URL=$(echo $PR_RESPONSE | jq -r ".[]._links.comments.href")
-            fi
-
-            curl --location --request POST "$PR_COMMENT_URL" \
-            -u CircleCI:$GITHUB_TOKEN \
-            --header 'Content-Type: application/json' \
-            --data-raw '{
-              "body": "## ESLint Report\n\n'"$ERRORS_BODY"'\n'"$WARNINGS_BODY"'"
-            }'
-  build:
-    parameters:
-      namespace:
-        description: Cluster namespace
-        type: string
-      sourcemap:
-        description: Generate sourcemap
-        type: boolean
-        default: false
-    executor: node
-    steps:
-      - checkout
-      - *restore_cache
+          command: npm run build
+          name: Build server
       - run:
-          name: Run Build
-          command: |
-            echo 'export GIT_BRANCH="$CIRCLE_BRANCH"' >> "$BASH_ENV"
-            echo 'export GIT_TAG="$CIRCLE_TAG"' >> "$BASH_ENV"
-            source "$BASH_ENV"
-            NODE_OPTIONS=--max-old-space-size=7680 npm run build:<< parameters.namespace >> -- --sourcemap=<< parameters.sourcemap >>
-          no_output_timeout: 60m
-
-      - create_workspace
-
+          command: npm run start
+          name: Start server
+          background: true
       - run:
-          name: Copy build to workspace
-          command: |
-            cp -a build workspace
-
-      - persist_to_workspace:
-          root: workspace
-          paths:
-            - ./build/
-
-pull_request_filters: &pull_request_filters
-  filters:
-    tags:
-      ignore:
-        - /^releases\/v(\d+\.){2}\d+$/
-    branches:
-      ignore:
-        - main
-
-deploy_staging_filters: &deploy_staging_filters
-  filters:
-    branches:
-      only:
-        - main
+          command: sleep 5 && curl -I localhost:5000
+          name: Verify server is running
 
 workflows:
-  build_pull_request:
+  build_and_test_app:
     jobs:
-      - install_dependencies:
-          context:
-          <<: *pull_request_filters
-      - tests:
-          requires:
-            - install_dependencies
-          context:
-          <<: *pull_request_filters
-      - lint:
-          requires:
-            - install_dependencies
-          context:
-          <<: *pull_request_filters
-      - build:
-          requires:
-            - install_dependencies
-          context:
-          namespace: 'staging'
-          <<: *pull_request_filters
-
-  build_staging:
-    jobs:
-      - install_dependencies:
-          context:
-          <<: *deploy_staging_filters
-      - tests:
-          requires:
-            - install_dependencies
-          context:
-          <<: *deploy_staging_filters
-      - build:
-          requires:
-            - install_dependencies
-          namespace: 'staging'
-          sourcemap: true
-          context:
-          <<: *deploy_staging_filters
+      - build_and_test
