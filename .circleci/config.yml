@@ -163,17 +163,17 @@ workflows:
           <<: *pull_request_filters
       - run_tests:
           requires:
-            - dependencies
+            - install_dependencies
           context:
           <<: *pull_request_filters
       - run_lint:
           requires:
-            - dependencies
+            - install_dependencies
           context:
           <<: *pull_request_filters
       - run_build:
           requires:
-            - dependencies
+            - install_dependencies
           context:
           namespace: 'staging'
           <<: *pull_request_filters
@@ -185,12 +185,12 @@ workflows:
           <<: *deploy_staging_filters
       - run_tests:
           requires:
-            - dependencies
+            - install_dependencies
           context:
           <<: *deploy_staging_filters
       - run_build:
           requires:
-            - dependencies
+            - install_dependencies
           namespace: 'staging'
           sourcemap: true
           context:
