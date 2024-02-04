@@ -46,7 +46,6 @@ jobs:
     steps:
       - checkout
       - install_deps
-
   run_tests:
     executor: node
     parallelism: 6
@@ -65,7 +64,6 @@ jobs:
           root: workspace/coverage
           paths:
             - ./*
-
   run_lint:
     executor: node
     steps:
@@ -105,7 +103,6 @@ jobs:
             --data-raw '{
               "body": "## ESLint Report\n\n'"$ERRORS_BODY"'\n'"$WARNINGS_BODY"'"
             }'
-
   run_build:
     parameters:
       namespace:
