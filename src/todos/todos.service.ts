@@ -12,7 +12,6 @@ export class TodosService {
   }
 
   findAllByUser(userId: any) {
-    console.log({ userId });
     return this.prisma.todo.findMany({ where: { userId: userId.sub } });
   }
 

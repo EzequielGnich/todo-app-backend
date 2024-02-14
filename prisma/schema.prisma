@@ -29,7 +29,14 @@ model Todo {
   deletedAt DateTime?
   userId    String
   user      User      @relation(fields: [userId], references: [id])
+  status    TodoStatus @default(ACTIVE)
 
   @@index([userId], map: "todos_userId")
   @@map("todos")
+}
+
+enum TodoStatus {
+  ACTIVE
+  COMPLETED
+  DELETED
 }

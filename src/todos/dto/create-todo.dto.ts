@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsUUID, MaxLength } from 'class-validator';
 import { Todo } from '../entities/todo.entity';
+import { TodoStatus } from '@prisma/client';
 
 export class CreateTodoDto extends Todo {
   @ApiProperty({
@@ -26,4 +27,10 @@ export class CreateTodoDto extends Todo {
     description: 'This is the id of the user that owns the todo.'
   })
   userId: string;
+
+  @ApiProperty({
+    example: TodoStatus.ACTIVE,
+    description: 'This is the status of the todo.'
+  })
+  status: TodoStatus;
 }
