@@ -6,6 +6,10 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "prisma:migrate": "prisma migrate deploy",
+    "prisma:unmigrate": "prisma migrate down --experimental",
+    "prisma:introspect": "prisma introspect",
+    "prisma:generate": "prisma generate",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
