@@ -44,6 +44,7 @@ jobs:
               cat response.txt  # Print the response body
               exit 1
             fi
+
 workflows:
   build_and_test_app:
     jobs:
